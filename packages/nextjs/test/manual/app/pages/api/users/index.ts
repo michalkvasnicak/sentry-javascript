@@ -1,16 +1,18 @@
-import { NextApiRequest, NextApiResponse } from 'next'
-import { sampleUserData } from '../../../utils/sample-data'
+import { withSentry } from '@sentry/nextjs';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-const handler = (_req: NextApiRequest, res: NextApiResponse) => {
+import { sampleUserData } from '../../../utils/sample-data';
+
+const handler = async (_req: NextApiRequest, res: NextApiResponse): Promise<void> => {
   try {
     if (!Array.isArray(sampleUserData)) {
-      throw new Error('Cannot find user data')
+      throw new Error('Cannot find user data');
     }
 
-    res.status(200).json(sampleUserData)
+    res.status(200).json(sampleUserData);
   } catch (err) {
-    res.status(500).json({ statusCode: 500, message: err.message })
+    res.status(500).json({ statusCode: 500, message: (err as Error).message });
   }
-}
+};
 
-export default handler
+export default withSentry(handler);
